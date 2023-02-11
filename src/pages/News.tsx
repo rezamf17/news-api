@@ -1,5 +1,7 @@
 import React from 'react';
-import { Space, Table, Tag, Card } from 'antd';
+import { Space, Table, Tag, Card, Button } from 'antd';
+import NewsApi from '../api/newsApi'
+import { AxiosResponse } from 'axios';
 
 const { Column } = Table;
 
@@ -111,7 +113,23 @@ const data: DataType[] = [
     },
 ];
 
-const News: React.FC = () => (
+const {  useEffect, useState } = React;
+
+
+const News = () => {
+    const [news, setNews] = useState<AxiosResponse | null | void>(null);
+    useEffect(() => {
+        try {
+            NewsApi.getNews('q', '2023-02-11&', 'popularity', '08a40b4b61c74dd0a39f86b1f8a29fff').then(result => {
+                setNews(result.data)
+            })
+            
+        } catch (error) {
+            console.log(error)
+        }
+    }, [])
+    console.log(news)
+    return (
     <Space direction="vertical" size={16}>
         <Card title="News Api" style={{ width: 900 }}>
             <Table dataSource={data}>
@@ -137,15 +155,14 @@ const News: React.FC = () => (
                     key="action"
                     render={(_: any, record: DataType) => (
                         <Space size="middle">
-                            <a>Invite {record.lastName}</a>
-                            <a>Delete</a>
+                            <Button type="primary">View</Button>
                         </Space>
                     )}
                 />
             </Table>
         </Card>
     </Space>
-
-);
+)
+};
 
 export default News;
