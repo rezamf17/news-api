@@ -1,151 +1,112 @@
 import React from 'react';
-import { Space, Table, Tag, Card } from 'antd';
+import { Space, Table, Tag, Card, Button, Image } from 'antd';
+import NewsApi from '../api/newsApi'
+import { AxiosResponse } from 'axios';
+import Moment from '../utility/moment'
+import {EyeOutlined} from '@ant-design/icons'
 
-const { Column } = Table;
 
-interface DataType {
-    key: React.Key;
-    newsTitle: string;
-    lastName: string;
-    age: number;
-    address: string;
-    tags: string[];
-}
+// interface DataType {
+//     key: any;
+//     newsTitle: any;
+//     title: string;
+//     description: string;
+//     publishedAt: string;
+//     // tags: string[];
+// }
 
-const data: DataType[] = [
-    {
-        key: '1',
-        newsTitle: 'John',
-        lastName: 'Brown',
-        age: 32,
-        address: 'New York No. 1 Lake Park',
-        tags: ['nice', 'developer'],
-    },
-    {
-        key: '2',
-        newsTitle: 'Jim',
-        lastName: 'Green',
-        age: 42,
-        address: 'London No. 1 Lake Park',
-        tags: ['loser'],
-    },
-    {
-        key: '3',
-        newsTitle: 'Joe',
-        lastName: 'Black',
-        age: 32,
-        address: 'Sydney No. 1 Lake Park',
-        tags: ['cool', 'teacher'],
-    },
-    {
-        key: '4',
-        newsTitle: 'John',
-        lastName: 'Brown',
-        age: 32,
-        address: 'New York No. 1 Lake Park',
-        tags: ['nice', 'developer'],
-    },
-    {
-        key: '5',
-        newsTitle: 'Jim',
-        lastName: 'Green',
-        age: 42,
-        address: 'London No. 1 Lake Park',
-        tags: ['loser'],
-    },
-    {
-        key: '6',
-        newsTitle: 'Joe',
-        lastName: 'Black',
-        age: 32,
-        address: 'Sydney No. 1 Lake Park',
-        tags: ['cool', 'teacher'],
-    },
-    {
-        key: '7',
-        newsTitle: 'John',
-        lastName: 'Brown',
-        age: 32,
-        address: 'New York No. 1 Lake Park',
-        tags: ['nice', 'developer'],
-    },
-    {
-        key: '8',
-        newsTitle: 'Jim',
-        lastName: 'Green',
-        age: 42,
-        address: 'London No. 1 Lake Park',
-        tags: ['loser'],
-    },
-    {
-        key: '9',
-        newsTitle: 'Joe',
-        lastName: 'Black',
-        age: 32,
-        address: 'Sydney No. 1 Lake Park',
-        tags: ['cool', 'teacher'],
-    },
-    {
-        key: '10',
-        newsTitle: 'John',
-        lastName: 'Brown',
-        age: 32,
-        address: 'New York No. 1 Lake Park',
-        tags: ['nice', 'developer'],
-    },
-    {
-        key: '2',
-        newsTitle: 'Jim',
-        lastName: 'Green',
-        age: 42,
-        address: 'London No. 1 Lake Park',
-        tags: ['loser'],
-    },
-    {
-        key: '3',
-        newsTitle: 'Joe',
-        lastName: 'Black',
-        age: 32,
-        address: 'Sydney No. 1 Lake Park',
-        tags: ['cool', 'teacher'],
-    },
-];
 
-const News: React.FC = () => (
+
+const {  useEffect, useState } = React;
+
+
+const News = () => {
+    const [news, setNews] = useState([]);
+    useEffect(() => {
+        try {
+            NewsApi.getNews('q', '2023-02-11&', 'popularity', '08a40b4b61c74dd0a39f86b1f8a29fff').then(result => {
+                setNews(result.data.articles)
+            })
+            
+        } catch (error) {
+            console.log(error)
+        }
+    }, [])
+    const data:any  = [
+        // {
+            //     key: '1',
+            //     newsTitle: 'John',
+            //     lastName: 'Brown',
+            //     age: 32,
+            //     address: 'New York No. 1 Lake Park',
+            //     tags: ['nice', 'developer'],
+            // },
+        ];
+        news.forEach( (row:any, index:number) => {
+            data.push({
+                key : index + 1,
+                title : row.title,
+                description : row.description,
+                urlToImage : row.urlToImage,
+                publishedAt : Moment.formatDate(row.publishedAt),
+                source : row.source.name,
+                url : row.url
+            })
+        })
+        // console.log(data)
+    const columns = [{
+        title: 'Image',
+        dataIndex: 'urlToImage',
+        key: 'urlToImage',
+        render: (record:any) => {
+            // console.log(record)
+           return (
+            <div>
+                <Image width={200} src={record}/>
+            </div>
+          );},
+        }, 
+       {
+        title: 'Title',
+        dataIndex: 'title', 
+        key: 'address',  
+       },
+       {
+        title: 'Description',
+        dataIndex: 'description', 
+        key: 'description',
+       },
+       {
+        title: 'Published',
+        dataIndex: 'publishedAt', 
+        key: 'publishedAt',
+       },
+       {
+        title: 'Source',
+        dataIndex: 'source', 
+        key: 'source',
+       },
+       {
+        title: 'Read Articles',
+        dataIndex: 'url', 
+        key: 'url',
+        render: (url:any) => {
+            // console.log(url)
+           return (
+            <div>
+                <Button type='primary' shape="circle" icon={<EyeOutlined />} onClick={() => window.open(url)}></Button>
+            </div>
+          );
+        }, 
+       },
+       ];
+    return (
     <Space direction="vertical" size={16}>
-        <Card title="News Api" style={{ width: 900 }}>
-            <Table dataSource={data}>
-                <Column title="News Title" dataIndex="newsTitle" key="newsTitle" />
-                <Column title="Age" dataIndex="age" key="age" />
-                <Column title="Address" dataIndex="address" key="address" />
-                <Column
-                    title="Tags"
-                    dataIndex="tags"
-                    key="tags"
-                    render={(tags: string[]) => (
-                        <>
-                            {tags.map((tag) => (
-                                <Tag color="blue" key={tag}>
-                                    {tag}
-                                </Tag>
-                            ))}
-                        </>
-                    )}
-                />
-                <Column
-                    title="Action"
-                    key="action"
-                    render={(_: any, record: DataType) => (
-                        <Space size="middle">
-                            <a>Invite {record.lastName}</a>
-                            <a>Delete</a>
-                        </Space>
-                    )}
-                />
-            </Table>
+        <Card title="News Api" style={{ width: '100%' }}>
+            <Table columns={columns} dataSource={data} bordered style={{width : '95%', marginLeft : 'auto', marginRight : 'auto'}}/>
         </Card>
     </Space>
-
-);
+)
+};
 
 export default News;
