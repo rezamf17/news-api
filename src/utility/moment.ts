@@ -6,6 +6,7 @@ export default {
     },
 
     searchDate (date:any) {
-        return moment(date).format('YYYY-MM-DD')
+        // return moment(date, 'YYYY-MM-DD').toDate();
+        return moment.utc(date, 'YYYY-MM-DDTHH:mm:ss.SSSZ').format('YYYY-MM-DD');
     }
 }

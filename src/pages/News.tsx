@@ -24,7 +24,8 @@ const News = () => {
     const [news, setNews] = useState([]);
     const [date, setDate] = useState<any>(null);
     const getData = () => {
-        NewsApi.getNews('q', '', 'popularity', '08a40b4b61c74dd0a39f86b1f8a29fff').then(result => {
+        const dateParse = JSON.stringify(date)
+        NewsApi.getNews('q', Moment.searchDate(dateParse), 'popularity', '08a40b4b61c74dd0a39f86b1f8a29fff').then(result => {
             setNews(result.data.articles)
         })
     }
@@ -35,16 +36,18 @@ const News = () => {
             console.log(error)
         }
     }, [])
-    const data:any  = [
-        // {
-            //     key: '1',
-            //     newsTitle: 'John',
-            //     lastName: 'Brown',
-            //     age: 32,
-            //     address: 'New York No. 1 Lake Park',
-            //     tags: ['nice', 'developer'],
-            // },
-        ];
+    const handleSearch = (e:any) => {
+        e.preventDefault()
+        setNews([])
+        getData()
+    }
+    const reset = (e:any) => {
+        e.preventDefault()
+        setNews([])
+        setDate(null)
+        getData()
+    }
+    const data:any  = [];
         news.forEach( (row:any, index:number) => {
             data.push({
                 key : index + 1,
@@ -57,6 +60,7 @@ const News = () => {
             })
         })
         const onChange: DatePickerProps['onChange'] = (date) => {
+            console.log(JSON.stringify(date))
             setDate(date)
         };
     const columns = [{
@@ -114,15 +118,15 @@ const News = () => {
             {/* {JSON.stringify(Moment.searchDate(date))} */}
             <Col span={10}><DatePicker onChange={onChange} value={date}/></Col>
         </Row>
-        <Row>
+        <Row style={{ marginTop : '2em'}}>
             <Col span={2}>
-                <Button type="default">
+                <Button type="default" onClick={reset}>
                     Reset
                 </Button>
             </Col>
             <Col span={20}></Col>
             <Col span={2}>
-                <Button type="primary">
+                <Button type="primary" onClick={handleSearch}>
                     Search
                 </Button>
             </Col>
